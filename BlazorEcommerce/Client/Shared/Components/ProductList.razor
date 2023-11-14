@@ -1,0 +1,44 @@
+﻿@using BlazorEcommerce.Shared.Entities;
+@using BlazorEcommerce.Shared.Models;
+@inject HttpClient Http
+@inject IProductService ProductService
+@implements IDisposable
+
+@if(ProductService.Products == null || ProductService.Products.Count == 0)
+{
+    <span> ...Loading</span>
+}
+else
+{
+    <ul class="list-unstyled">
+        @foreach (var product in ProductService.Products)
+        {
+            <li class="media my-3 ">
+                <div class="media-img-wrapper mr-2">
+                    <a href="/product/@product.Id">
+                        <img class="media-img " src="@product.ImageUrl" alt="@product.Title" />
+                    </a>
+                </div>
+                <div class="media-body ">
+                    <a href="/product/@product.Id">
+                        <h4 class="mb-0">@product.Title</h4>
+                    </a>
+                    <p>@product.Description</p>
+                    <h5 class="price">
+                        $@product.Price
+                    </h5>
+                </div>
+            </li>
+        }
+    </ul>
+}
+@code {
+    protected override void OnInitialized() {
+        ProductService.ProductsChanged += StateHasChanged;
+    }
+
+    public void Dispose()
+    {
+        ProductService.ProductsChanged -= StateHasChanged;
+    }
+}
