@@ -14,18 +14,50 @@ else
         <div class="media-body">
             <h2 class="mb-0">@product.Title</h2>
             <p>@product.Description</p>
-            <h4 class="price">$@product.Price</h4>
+
+            @if(GetSelectedVariant != null && product.ProductVariants.Count > 1)
+            {
+                <div class="form-group">
+                    <select class="form-control" @bind="currentTypeId">
+                        @foreach(var variant in product.ProductVariants)
+                        {
+                            <option value="@variant.ProductTypeId">@variant.ProductType.Name</option>
+                        }
+                    </select>
+                </div>
+            }
+
+            @if(GetSelectedVariant != null)
+            {
+                @if(GetSelectedVariant().OriginalPrice > GetSelectedVariant().Price)
+                {
+                    <h6 class="text-muted original-price">$@GetSelectedVariant().OriginalPrice</h6>
+                }
+                <h4 class="sale-price">
+                    $@GetSelectedVariant().Price
+                </h4>
+            }
         </div>
     </div>
 }
 
 @code {
     private Product? product = null;
+    private int currentTypeId = 1;
     [Parameter]
     public int Id { get; set; }
     protected override async Task OnParametersSetAsync()
     {
         var result = await ProductService.GetProduct(Id);
         product = result.Data;
+        if(product.ProductVariants.Count > 0)
+        {
+            currentTypeId = product.ProductVariants[0].ProductTypeId;
+        }
+    }
+    private ProductVariant GetSelectedVariant()
+    {
+        var variants = product.ProductVariants.FirstOrDefault(v => v.ProductTypeId == currentTypeId);
+        return variants;
     }
 }

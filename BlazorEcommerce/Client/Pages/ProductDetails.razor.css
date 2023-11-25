@@ -15,6 +15,10 @@
     text-decoration: line-through;
 }
 
+.sale-price {
+    color: green;
+}
+
 @media (max-width: 1023.98px) {
     .media {
         flex-direction: column;

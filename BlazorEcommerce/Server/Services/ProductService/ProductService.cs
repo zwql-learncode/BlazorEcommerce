@@ -13,8 +13,11 @@ namespace BlazorEcommerce.Server.Services.ProductService
 
         public async Task<ServiceResponse<Product>> GetProductAsync(int productId)
         {
-            var product = await _context.Products.FirstOrDefaultAsync(x => x.Id == productId);
-            if (product == null) 
+            var product = await _context.Products
+                .Include(p => p.ProductVariants)
+                .ThenInclude(v => v.ProductType)
+                .FirstOrDefaultAsync(p => p.Id == productId);
+            if (product == null)
             {
                 return new ServiceResponse<Product>
                 {
@@ -33,6 +36,7 @@ namespace BlazorEcommerce.Server.Services.ProductService
         {
             var products = await _context.Products
                 .Where(p => p.Category.Url.ToLower().Contains(categoryUrl.ToLower()))
+                .Include(p => p.ProductVariants)
                 .ToListAsync();
             if (products == null)
             {
@@ -52,9 +56,11 @@ namespace BlazorEcommerce.Server.Services.ProductService
 
         public async Task<ServiceResponse<List<Product>>> GetProductsAsync()
         {
-            var products = await _context.Products.ToListAsync();
+            var products = await _context.Products
+                 .Include(p => p.ProductVariants)
+                 .ToListAsync();
             var result = new ServiceResponse<List<Product>>
-            { 
+            {
                 Data = products,
                 Message = "Thành công"
             };
