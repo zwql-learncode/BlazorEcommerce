@@ -1,4 +1,5 @@
 ﻿using BlazorEcommerce.Shared.Entities;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace BlazorEcommerce.Server.Services.ProductService
 {
@@ -50,7 +51,7 @@ namespace BlazorEcommerce.Server.Services.ProductService
             {
                 Data = products,
                 Message = "Thành công"
-            }; ;
+            }; 
 
         }
 
@@ -65,6 +66,49 @@ namespace BlazorEcommerce.Server.Services.ProductService
                 Message = "Thành công"
             };
             return result;
+        }
+
+        public async Task<ServiceResponse<ProductSearchResult>> SearchProducts(string seacrchText, int page)
+        {
+            var pageResults = 2f;
+            var pageCount = Math.Ceiling((await FindProductsBySearchText(seacrchText)).Count / pageResults);
+
+
+            var products = await _context.Products
+                .Where(p => p.Title.ToLower().Contains(seacrchText.ToLower())
+                || p.Description.ToLower().Contains(seacrchText.ToLower()))
+                .Include (p => p.ProductVariants)
+                .Skip((page - 1) * (int)pageResults)
+                .Take((int)pageResults)
+                .ToListAsync();
+                
+            if (products == null)
+            {
+                return new ServiceResponse<ProductSearchResult>
+                {
+                    Success = false,
+                    Message = "Không tìm thấy sản phẩm"
+                };
+            }
+            return new ServiceResponse<ProductSearchResult>
+            {
+                Data = new ProductSearchResult
+                {
+                    Products = products,
+                    CurrentPage = page,
+                    Pages = (int)pageCount
+                },
+                Message = "Thành công"
+            }; 
+        }
+
+        private async Task<List<Product>> FindProductsBySearchText(string searchText)
+        {
+            return await _context.Products
+                                .Where(p => p.Title.ToLower().Contains(searchText.ToLower()) ||
+                                    p.Description.ToLower().Contains(searchText.ToLower()))
+                                .Include(p => p.ProductVariants)
+                                .ToListAsync();
         }
     }
 }

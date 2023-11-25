@@ -9,6 +9,11 @@ namespace BlazorEcommerce.Client.Services.ProductService
         public event Action ProductsChanged;
 
         public List<Product> Products { get; set; } = new List<Product>();
+        public string Message { get; set ; }
+        public int CurrentPage { get; set; } = 1;
+        public int PageCount { get; set; } = 0;
+        public string LastSearchText { get; set; } = string.Empty;
+
         public ProductService(HttpClient http)
         {
             _http = http;
@@ -19,9 +24,15 @@ namespace BlazorEcommerce.Client.Services.ProductService
             var result = (categoryUrl == null) ?
                 await _http.GetFromJsonAsync<ServiceResponse<List<Product>>>("api/Product") :
                 await _http.GetFromJsonAsync<ServiceResponse<List<Product>>>($"api/Product/category/{categoryUrl}");
-            if (result != null && result.Data != null)
+            if (result != null && result.Data != null && result.Data.Count != 0)
             {
                 Products = result.Data;
+                CurrentPage = 1;
+                PageCount = 0;
+            }
+            else
+            {
+                Message = "Không tìm thấy sản phẩm";
             }
 
             ProductsChanged.Invoke();
@@ -31,6 +42,24 @@ namespace BlazorEcommerce.Client.Services.ProductService
         {
             var result = await _http.GetFromJsonAsync<ServiceResponse<Product>>($"api/Product/{productId}");
             return result;
+        }
+
+        public async Task SearchProducts(string searchText, int page)
+        {
+            LastSearchText = searchText;
+            var result = await _http.GetFromJsonAsync<ServiceResponse<ProductSearchResult>>($"api/Product/search/{searchText}/{page}");
+            if (result != null && result.Data != null)
+            {
+                Products = result.Data.Products;
+                CurrentPage = result.Data.CurrentPage;
+                PageCount = result.Data.Pages;   
+            }
+            else
+            {
+                Message = "Không tìm thấy sản phẩm";
+            }
+
+            ProductsChanged.Invoke();
         }
     }
 }

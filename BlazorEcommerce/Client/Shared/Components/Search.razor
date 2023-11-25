@@ -1,0 +1,37 @@
+﻿@inject NavigationManager NavigationManager
+@inject IProductService ProductService
+
+<div class="input-group">
+    <input @bind-value="searchText" @bind-value:event="oninput" type="search" @onkeyup="HandleSearch" class="form-control" placeholder="Search..." @ref="searchInput" />
+    <div class="input-group-append">
+        <button class="btn btn-primary" @onclick="SearchProduct"> 
+            <span class="oi oi-magnifying-glass"></span>
+        </button>
+    </div>
+</div>
+
+@code {
+    private string searchText = string.Empty;
+    protected ElementReference searchInput;
+
+    protected override async Task OnAfterRenderAsync(bool fisrtRender)
+    {
+        if (fisrtRender)
+        {
+            await searchInput.FocusAsync();
+        }
+    }
+
+    public void SearchProduct()
+    {
+        NavigationManager.NavigateTo($"search/{searchText}/1");
+    }
+
+    public async Task HandleSearch(KeyboardEventArgs args)
+    {
+        if (args.Key == null || args.Key.Equals("Enter"))
+        {
+            SearchProduct();
+        }
+    }
+}
