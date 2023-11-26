@@ -9,7 +9,7 @@ namespace BlazorEcommerce.Client.Services.ProductService
         public event Action ProductsChanged;
 
         public List<Product> Products { get; set; } = new List<Product>();
-        public string Message { get; set ; }
+        public string Message { get; set; } = "Loading...";
         public int CurrentPage { get; set; } = 1;
         public int PageCount { get; set; } = 0;
         public string LastSearchText { get; set; } = string.Empty;
@@ -60,6 +60,12 @@ namespace BlazorEcommerce.Client.Services.ProductService
             }
 
             ProductsChanged.Invoke();
+        }
+
+       public async Task<List<string>> GetProductSearchSuggestions(string searchText)
+        {
+            var result = await _http.GetFromJsonAsync<ServiceResponse<List<string>>>($"api/product/searchsuggestions/{searchText}");
+            return result.Data;
         }
     }
 }

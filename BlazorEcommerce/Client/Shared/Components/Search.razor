@@ -2,7 +2,13 @@
 @inject IProductService ProductService
 
 <div class="input-group">
-    <input @bind-value="searchText" @bind-value:event="oninput" type="search" @onkeyup="HandleSearch" class="form-control" placeholder="Search..." @ref="searchInput" />
+    <input @bind-value="searchText" @bind-value:event="oninput" type="search" list="products" @onkeyup="HandleSearch" class="form-control" placeholder="Search..." @ref="searchInput" />
+    <datalist id="products">
+        @foreach(var suggestion in suggesttions)
+        {
+            <option>@suggestion</option>
+        }
+    </datalist>
     <div class="input-group-append">
         <button class="btn btn-primary" @onclick="SearchProduct"> 
             <span class="oi oi-magnifying-glass"></span>
@@ -12,6 +18,9 @@
 
 @code {
     private string searchText = string.Empty;
+
+    private List<string> suggesttions = new List<string>();
+
     protected ElementReference searchInput;
 
     protected override async Task OnAfterRenderAsync(bool fisrtRender)
@@ -32,6 +41,10 @@
         if (args.Key == null || args.Key.Equals("Enter"))
         {
             SearchProduct();
+        }
+        else if(searchText.Length > 1)
+        {
+            suggesttions = await ProductService.GetProductSearchSuggestions(searchText);
         }
     }
 }

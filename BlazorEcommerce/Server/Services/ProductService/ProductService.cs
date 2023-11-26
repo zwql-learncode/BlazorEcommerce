@@ -68,6 +68,39 @@ namespace BlazorEcommerce.Server.Services.ProductService
             return result;
         }
 
+        public async Task<ServiceResponse<List<string>>> GetProductSearchSuggestions(string seacrchText)
+        {
+            var products = await FindProductsBySearchText(seacrchText);
+
+            List<string> result = new List<string>();
+
+            foreach (var product in products)
+            {
+                if(product.Title.Contains(seacrchText, StringComparison.OrdinalIgnoreCase))
+                {
+                    result.Add(product.Title);
+                }
+
+                if(product.Description != null)
+                {
+                    var punctuation = product.Description.Where(char.IsPunctuation).Distinct().ToArray();
+                    var words = product.Description.Split().Select(w => w.Trim(punctuation));
+                    foreach (var word in words)
+                    {
+                        if(word.Contains(seacrchText, StringComparison.OrdinalIgnoreCase) && !result.Contains(word))
+                        {
+                            result.Add(word);
+                        }
+                    }
+                }
+            }
+
+             return new ServiceResponse<List<string>> 
+             { 
+                 Data = result
+             };
+        }
+
         public async Task<ServiceResponse<ProductSearchResult>> SearchProducts(string seacrchText, int page)
         {
             var pageResults = 2f;

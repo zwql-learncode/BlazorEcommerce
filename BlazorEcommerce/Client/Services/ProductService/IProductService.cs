@@ -12,5 +12,6 @@
         Task GetProducts(string? categoryUrl = null);
         Task<ServiceResponse<Product>> GetProduct(int productId);
         Task SearchProducts (string searchText, int page);
+        Task<List<string>> GetProductSearchSuggestions(string searchText);
     }
 }
