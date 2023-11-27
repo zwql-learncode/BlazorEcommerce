@@ -1,4 +1,5 @@
 ﻿using BlazorEcommerce.Client.Services.ProductService;
+using System.Net.Http.Json;
 using System.Xml.Xsl;
 
 namespace BlazorEcommerce.Client.Services.CartService
@@ -7,12 +8,14 @@ namespace BlazorEcommerce.Client.Services.CartService
     {
         private readonly ILocalStorageService _localStorage;
         private readonly IProductService _productService;
+        private readonly HttpClient _http;
 
         public event Action OnChange;
-        public CartService(ILocalStorageService localStorage, IProductService productService)
+        public CartService(ILocalStorageService localStorage, IProductService productService, HttpClient http)
         {
             _localStorage = localStorage;
             _productService = productService;
+            _http = http;
         }
 
         public async Task AddToCart(CartItemDTO cartItem)
@@ -68,6 +71,13 @@ namespace BlazorEcommerce.Client.Services.CartService
         {
             await _localStorage.RemoveItemAsync("cart");
             OnChange.Invoke();
+        }
+
+        public async Task<string> Checkout()
+        {
+            var result = await _http.PostAsJsonAsync("api/payment/checkout", await GetCartItems() );
+            var url = await result.Content.ReadAsStringAsync();
+            return url;
         }
     }
 }

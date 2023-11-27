@@ -7,5 +7,6 @@
         Task<List<CartItemDTO>> GetCartItems();
         Task DeleteItem(CartItemDTO item);
         Task EmptyCart();
+        Task<string> Checkout();
     }
 }

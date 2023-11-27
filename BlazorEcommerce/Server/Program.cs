@@ -5,6 +5,7 @@ global using BlazorEcommerce.Shared.Models;
 using Microsoft.AspNetCore.ResponseCompression;
 using BlazorEcommerce.Server.Services.ProductService;
 using BlazorEcommerce.Server.Services.CategoryService;
+using BlazorEcommerce.Server.Services.PaymentService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +24,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<IPaymentService, PaymentService>();
 
 var app = builder.Build();
 
