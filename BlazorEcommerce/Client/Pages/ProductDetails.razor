@@ -39,6 +39,11 @@ else
                     $@GetSelectedVariant().Price
                 </h4>
             }
+            <EditForm Model="cartItem">
+                <div class="form-group">
+                    <InputNumber id="quantity" @bind-Value="cartItem.Quantity" class="form-control" style="width: 70px;" />
+                </div>
+            </EditForm>
             <button class="btn btn-primary" @onclick="AddToCart">
                 <i class="oi oi-cart"></i>&nbsp;&nbsp;&nbsp;Add to Cart
             </button>
@@ -47,10 +52,14 @@ else
 }
 
 @code {
-    private Product? product = null;
-    private int currentTypeId = 1;
     [Parameter]
     public int Id { get; set; }
+
+    private Product? product = null;
+
+    private int currentTypeId = 1;
+
+    private CartItemDTO cartItem = new CartItemDTO { Quantity = 1 };
     protected override async Task OnParametersSetAsync()
     {
         var result = await ProductService.GetProduct(Id);
@@ -68,7 +77,16 @@ else
 
     private async Task AddToCart()
     {
-        await CartService.AddToCart(GetSelectedVariant());
+        var productVariant = GetSelectedVariant();
+
+        cartItem.ProductTypeId = productVariant.ProductTypeId;
+        cartItem.ProductTypeName = productVariant.ProductType.Name;
+        cartItem.ImageUrl = product.ImageUrl;
+        cartItem.Price = productVariant.Price;
+        cartItem.ProductId = productVariant.ProductId;
+        cartItem.ProductTitle = product.Title;
+
+        await CartService.AddToCart(cartItem);
     }
 
 

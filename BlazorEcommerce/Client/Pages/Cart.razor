@@ -1,14 +1,56 @@
 ﻿@page "/cart"
 @inject ICartService CartService
 
-<h3>Shopping Cart</h3>
-
-@if (cartProducts == null || cartProducts.Count <= 0)
+@if (!orderPlaced)
 {
-    <span> You have no item in your cart. </span>
+    <h3>Shopping Cart</h3>
+
+    @if (cartProducts == null || cartProducts.Count <= 0)
+    {
+        <span> You have no item in your cart. </span>
+    }
+    else
+    {
+        <div>
+            @foreach (var product in cartProducts)
+            {
+                <div class="item-container">
+                    <div class="image-wrapper">
+                        <img src="@product.ImageUrl" class="item-image" />
+                    </div>
+                    <div class="item-name">
+                        <h5>
+                            <a href="/product/@product.ProductId">
+                                @product.ProductTitle
+                            </a>
+                        </h5>
+                        <span>
+                            @product.ProductTypeName
+                        </span> <br />
+                        <button class="btn-delete" @onclick="@(() => DeleteItem(product))">
+                            Delete
+                        </button>
+                        <EditForm Model="product">
+                            <InputNumber id="quantity" @bind-Value="product.Quantity" class="form-control" style="width:70px;"></InputNumber>
+                        </EditForm>
+                    </div>
+                    <div class="cart-product-price">
+                        $@(product.Price * product.Quantity)
+                    </div>
+                </div>
+            }
+            <div class="cart-product-price">
+                Total (@cartProducts.Count): $@cartProducts.Sum(product => product.Price * product.Quantity)
+            </div>
+            <button @onclick="PlaceOrder" class="btn alert-success float-end mt-1"> Place Order </button>
+        </div>
+    }
+
 }
 else
 {
+    <h3> Thank you for your order! </h3>
+    <h4> Here's that you'll get: </h4>
     <div>
         @foreach (var product in cartProducts)
         {
@@ -23,27 +65,23 @@ else
                         </a>
                     </h5>
                     <span>
-                        @product.ProductTypeName
-                    </span> <br />
-                    <button class="btn-delete" @onclick="@(() => DeleteItem(product))">
-                        Delete
-                    </button>
+                        @product.ProductTypeName x @product.Quantity
+                    </span> 
                 </div>
                 <div class="cart-product-price">
-                    @product.Price
+                    $@(product.Price * product.Quantity)
                 </div>
             </div>
         }
         <div class="cart-product-price">
-            Total (@cartProducts.Count): $@cartProducts.Sum(product => product.Price)
+            Total (@cartProducts.Count): $@cartProducts.Sum(product => product.Price * product.Quantity)
         </div>
     </div>
 }
 
-
-
 @code {
     List<CartItemDTO> cartProducts;
+    bool orderPlaced = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -54,5 +92,11 @@ else
     {
         await CartService.DeleteItem(item);
         cartProducts = await CartService.GetCartItems();
+    }
+
+    private async Task PlaceOrder()
+    {
+        orderPlaced = true;
+        await CartService.EmptyCart();
     }
 }
