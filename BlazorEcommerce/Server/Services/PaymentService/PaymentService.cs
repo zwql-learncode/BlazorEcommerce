@@ -10,7 +10,7 @@ namespace BlazorEcommerce.Server.Services.PaymentService
         {
             StripeConfiguration.ApiKey = "sk_test_51OH0owBCD48lcuKVPhjuxGTCdyZiZ3FL1ub1jZudAU1rvfpt3ZqRkt6xa47aqVmw2212CkeSSXt67IcNCTWGlQZC00r9ZDKhH7";
         }
-        public Session CreateCheckoutSession(List<CartItemDTO> cartItems)
+        public Session CreateCheckoutSession(List<CartItemResponseDTO> cartItems)
         {
             var lineItems = new List<SessionLineItemOptions>();
             cartItems.ForEach(product => lineItems.Add(new SessionLineItemOptions

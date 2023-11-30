@@ -16,7 +16,7 @@ namespace BlazorEcommerce.Server.Controllers
         }
 
         [HttpPost("checkout")]
-        public ActionResult CheckoutSession(List<CartItemDTO> cartItems)
+        public ActionResult CheckoutSession(List<CartItemResponseDTO> cartItems)
         {
             var session = _service.CreateCheckoutSession(cartItems);
             return Ok(session.Url);

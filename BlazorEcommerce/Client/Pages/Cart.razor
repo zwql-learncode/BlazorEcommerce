@@ -2,13 +2,15 @@
 @inject ICartService CartService
 @inject NavigationManager NavigationManager
 
+<PageTitle>Shopping Cart</PageTitle>
+
 @if (!orderPlaced)
 {
     <h3>Shopping Cart</h3>
 
     @if (cartProducts == null || cartProducts.Count <= 0)
     {
-        <span> You have no item in your cart. </span>
+        <span> @message </span>
     }
     else
     {
@@ -28,15 +30,15 @@
                         <span>
                             @product.ProductTypeName
                         </span> <br />
-                        <button class="btn-delete" @onclick="@(() => DeleteItem(product))">
+                        <button class="btn-delete" @onclick="@(() => DeleteItem(product.ProductId, product.ProductTypeId))">
                             Delete
                         </button>
-                        <EditForm Model="product">
-                            <InputNumber id="quantity" @bind-Value="product.Quantity" class="form-control" style="width:70px;"></InputNumber>
-                        </EditForm>
+                        <input type="number" value="@product.Quantity" @onchange="@((ChangeEventArgs e) => UpdateQuantity(e, product))" class="form-control input-quantity" min="1" />
                     </div>
                     <div class="cart-product-price">
-                        $@(product.Price * product.Quantity)
+                        $@(
+                           product.Price * product.Quantity
+                           )
                     </div>
                 </div>
             }
@@ -67,10 +69,12 @@ else
                     </h5>
                     <span>
                         @product.ProductTypeName x @product.Quantity
-                    </span> 
+                    </span>
                 </div>
                 <div class="cart-product-price">
-                    $@(product.Price * product.Quantity)
+                    $@(
+                       product.Price * product.Quantity
+                       )
                 </div>
             </div>
         }
@@ -81,18 +85,39 @@ else
 }
 
 @code {
-    List<CartItemDTO> cartProducts;
+    List<CartItemResponseDTO> cartProducts = null;
+
+    string message = "Loading cart...";
+
     bool orderPlaced = false;
 
     protected override async Task OnInitializedAsync()
     {
-        cartProducts = await CartService.GetCartItems();
+        await LoadCart();
     }
 
-    private async Task DeleteItem(CartItemDTO item)
+    private async Task DeleteItem(int productId, int productTypeId)
     {
-        await CartService.DeleteItem(item);
-        cartProducts = await CartService.GetCartItems();
+        await CartService.DeleteItem(productId, productTypeId);
+        await LoadCart();
+    }
+
+    private async Task LoadCart()
+    {
+        await CartService.GetCartItemsCount();
+        cartProducts = await CartService.GetCartProduct();
+        if (cartProducts == null || cartProducts.Count == 0)
+        {
+            message = "You have no item in your cart.";
+        }
+    }
+
+    private async Task UpdateQuantity(ChangeEventArgs e, CartItemResponseDTO product)
+    {
+        product.Quantity = int.Parse(e.Value.ToString());
+        if (product.Quantity < 1)
+            product.Quantity = 1;
+        await CartService.UpdateQuantity(product);
     }
 
     private async Task PlaceOrder()
@@ -101,4 +126,5 @@ else
         NavigationManager.NavigateTo(checkoutUrl);
         await CartService.EmptyCart();
     }
+
 }

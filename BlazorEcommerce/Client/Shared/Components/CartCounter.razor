@@ -21,7 +21,7 @@
 
     private int GetProductCount()
     {
-        var cart = LocalStorage.GetItem<List<ProductVariant>>("cart");
-        return cart != null ? cart.Count : 0;
+        var count = LocalStorage.GetItem<int>("cartItemsCount");
+        return count;
     }
 }

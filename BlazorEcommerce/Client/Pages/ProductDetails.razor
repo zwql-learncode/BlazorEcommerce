@@ -55,11 +55,13 @@ else
     [Parameter]
     public int Id { get; set; }
 
+
     private Product? product = null;
 
     private int currentTypeId = 1;
 
-    private CartItemDTO cartItem = new CartItemDTO { Quantity = 1 };
+    private CartItem cartItem = new CartItem { Quantity = 1 };
+
     protected override async Task OnParametersSetAsync()
     {
         var result = await ProductService.GetProduct(Id);
@@ -78,13 +80,8 @@ else
     private async Task AddToCart()
     {
         var productVariant = GetSelectedVariant();
-
-        cartItem.ProductTypeId = productVariant.ProductTypeId;
-        cartItem.ProductTypeName = productVariant.ProductType.Name;
-        cartItem.ImageUrl = product.ImageUrl;
-        cartItem.Price = productVariant.Price;
         cartItem.ProductId = productVariant.ProductId;
-        cartItem.ProductTitle = product.Title;
+        cartItem.ProductTypeId = productVariant.ProductTypeId;
 
         await CartService.AddToCart(cartItem);
     }

@@ -9,7 +9,7 @@ using BlazorEcommerce.Server.Services.ProductService;
 using BlazorEcommerce.Server.Services.CategoryService;
 using BlazorEcommerce.Server.Services.PaymentService;
 using BlazorEcommerce.Server.Services.AuthService;
-
+using BlazorEcommerce.Server.Services.CartService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,6 +30,7 @@ builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<ICartService, CartService>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -42,6 +43,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateAudience = false
         };
     });
+
+builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 
