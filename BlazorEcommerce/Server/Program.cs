@@ -10,6 +10,7 @@ using BlazorEcommerce.Server.Services.CategoryService;
 using BlazorEcommerce.Server.Services.PaymentService;
 using BlazorEcommerce.Server.Services.AuthService;
 using BlazorEcommerce.Server.Services.CartService;
+using BlazorEcommerce.Server.Services.OrderSerivce;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,6 +32,7 @@ builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ICartService, CartService>();
+builder.Services.AddScoped<IOrderService, OrderService>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>

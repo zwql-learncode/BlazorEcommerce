@@ -1,5 +1,6 @@
 ﻿@page "/cart"
 @inject ICartService CartService
+@inject IOrderService OrderService
 @inject NavigationManager NavigationManager
 
 <PageTitle>Shopping Cart</PageTitle>
@@ -45,7 +46,7 @@
             <div class="cart-product-price">
                 Total (@cartProducts.Count): $@cartProducts.Sum(product => product.Price * product.Quantity)
             </div>
-            <button @onclick="PlaceOrder" class="btn alert-success float-end mt-1"> Checkout </button>
+            <button @onclick="PlaceOrder" class="btn alert-success float-end mt-1"> Place Order </button>
         </div>
     }
 
@@ -53,35 +54,7 @@
 else
 {
     <h3> Thank you for your order! </h3>
-    <h4> Here's that you'll get: </h4>
-    <div>
-        @foreach (var product in cartProducts)
-        {
-            <div class="item-container">
-                <div class="image-wrapper">
-                    <img src="@product.ImageUrl" class="item-image" />
-                </div>
-                <div class="item-name">
-                    <h5>
-                        <a href="/product/@product.ProductId">
-                            @product.ProductTitle
-                        </a>
-                    </h5>
-                    <span>
-                        @product.ProductTypeName x @product.Quantity
-                    </span>
-                </div>
-                <div class="cart-product-price">
-                    $@(
-                       product.Price * product.Quantity
-                       )
-                </div>
-            </div>
-        }
-        <div class="cart-product-price">
-            Total (@cartProducts.Count): $@cartProducts.Sum(product => product.Price * product.Quantity)
-        </div>
-    </div>
+    <h4> You can check your order <a href="orders"> here </a> </h4>
 }
 
 @code {
@@ -93,6 +66,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
+        orderPlaced = false;
         await LoadCart();
     }
 
@@ -122,9 +96,9 @@ else
 
     private async Task PlaceOrder()
     {
-        string checkoutUrl = await CartService.Checkout();
-        NavigationManager.NavigateTo(checkoutUrl);
-        await CartService.EmptyCart();
+        await OrderService.PlaceOrder();
+        await CartService.GetCartItemsCount();
+        orderPlaced = true;
     }
 
 }

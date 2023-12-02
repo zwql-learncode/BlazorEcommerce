@@ -89,6 +89,54 @@ namespace BlazorEcommerce.Server.Migrations
                         });
                 });
 
+            modelBuilder.Entity("BlazorEcommerce.Shared.Entities.Order", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<DateTime>("OrderDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("TotalPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Orders");
+                });
+
+            modelBuilder.Entity("BlazorEcommerce.Shared.Entities.OrderItem", b =>
+                {
+                    b.Property<int>("OrderId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("TotalPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("OrderId", "ProductId", "ProductTypeId");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("ProductTypeId");
+
+                    b.ToTable("OrderItems");
+                });
+
             modelBuilder.Entity("BlazorEcommerce.Shared.Entities.Product", b =>
                 {
                     b.Property<int>("Id")
@@ -451,6 +499,33 @@ namespace BlazorEcommerce.Server.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("BlazorEcommerce.Shared.Entities.OrderItem", b =>
+                {
+                    b.HasOne("BlazorEcommerce.Shared.Entities.Order", "Order")
+                        .WithMany("OrderItems")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BlazorEcommerce.Shared.Entities.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BlazorEcommerce.Shared.Entities.ProductType", "ProductType")
+                        .WithMany()
+                        .HasForeignKey("ProductTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Order");
+
+                    b.Navigation("Product");
+
+                    b.Navigation("ProductType");
+                });
+
             modelBuilder.Entity("BlazorEcommerce.Shared.Entities.Product", b =>
                 {
                     b.HasOne("BlazorEcommerce.Shared.Entities.Category", "Category")
@@ -479,6 +554,11 @@ namespace BlazorEcommerce.Server.Migrations
                     b.Navigation("Product");
 
                     b.Navigation("ProductType");
+                });
+
+            modelBuilder.Entity("BlazorEcommerce.Shared.Entities.Order", b =>
+                {
+                    b.Navigation("OrderItems");
                 });
 
             modelBuilder.Entity("BlazorEcommerce.Shared.Entities.Product", b =>
