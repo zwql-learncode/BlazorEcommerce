@@ -1,4 +1,5 @@
 ﻿using BlazorEcommerce.Server.Services.PaymentService;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,12 +16,23 @@ namespace BlazorEcommerce.Server.Controllers
             _service = service;
         }
 
-        [HttpPost("checkout")]
-        public ActionResult CheckoutSession(List<CartItemResponseDTO> cartItems)
+        [HttpPost("checkout"), Authorize]
+        public async Task<ActionResult<string>> CheckoutSession()
         {
-            var session = _service.CreateCheckoutSession(cartItems);
+            var session = await _service.CreateCheckoutSession();
             return Ok(session.Url);
         }
+
+        [HttpPost]
+        public async Task<ActionResult<ServiceResponse<bool>>> FulfillOrder()
+        {
+            var res = await _service.FulfillOrder(Request);
+            if (!res.Success)
+            {
+                return BadRequest(res.Message);
+            }
+            return Ok(res); 
+        } 
     }
   
 }

@@ -23,3 +23,17 @@
     ```
 1.  **Step 4.**
     Run project
+
+1. **Step 5.**
+    run Stripe CLI
+    ```she
+    cd Development/Stripe
+    ```
+    Verifies your authentication with Stripe
+    ```she
+    stripe login
+    ```
+    Using Stripe API Version
+    ```she
+    stripe listen --forward-to https://localhost:7276/api/payment
+    ```

@@ -4,6 +4,7 @@ namespace BlazorEcommerce.Server.Services.PaymentService
 {
     public interface IPaymentService
     {
-        Session CreateCheckoutSession(List<CartItemResponseDTO> cartItems);
+        Task<Session> CreateCheckoutSession();
+        Task<ServiceResponse<bool>> FulfillOrder(HttpRequest req);
     }
 }
