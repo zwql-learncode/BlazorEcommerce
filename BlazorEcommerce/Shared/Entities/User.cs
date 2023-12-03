@@ -14,5 +14,6 @@ namespace BlazorEcommerce.Shared.Entities
         public byte[] PasswordSalt { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime ModifiedAt { get; set; }
+        public Address Address { get; set; }
     }
 }
