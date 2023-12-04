@@ -9,6 +9,7 @@ using BlazorEcommerce.Client.Services.CartService;
 using BlazorEcommerce.Client.Services.CategoryService;
 using BlazorEcommerce.Client.Services.OrderService;
 using BlazorEcommerce.Client.Services.ProductService;
+using BlazorEcommerce.Client.Services.ProductTypeService;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
@@ -25,6 +26,7 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IAddressService, AddressService>();
+builder.Services.AddScoped<IProductTypeService, ProductTypeService>();
 
 builder.Services.AddOptions();
 builder.Services.AddAuthorizationCore();
