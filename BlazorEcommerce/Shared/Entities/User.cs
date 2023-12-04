@@ -15,5 +15,6 @@ namespace BlazorEcommerce.Shared.Entities
         public DateTime CreatedAt { get; set; }
         public DateTime ModifiedAt { get; set; }
         public Address Address { get; set; }
+        public string Role { get; set; } = "Customer";
     }
 }
