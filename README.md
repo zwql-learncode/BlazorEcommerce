@@ -6,7 +6,7 @@
 1.  **Step 1.**
     Clone the project
     ```sh
-    git clone https://zhengwuqingling28/BlazorEcommerce.git
+    git clone https://github.com/zhengwuqingling28/BlazorEcommerce.git
     ```
 1.  **Step 2.**
     change connection string in Server/appsettings.json
